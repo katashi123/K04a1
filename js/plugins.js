@@ -28,5 +28,6 @@ var $plugins =
 {"name":"AudioStreaming","status":true,"description":"Load audio faster and use only ogg files.","parameters":{"mode":"10","deleteM4a":"false"}},
 {"name":"stbvorbis_stream","status":false,"description":"","parameters":{}},
 {"name":"liply_Controller","status":true,"description":"liply_Controller","parameters":{"Show in PC":"off"}},
+{"name":"YEP_TouchInputDisabler","status":true,"description":"v1.00 Sometimes, we just want to disable mouse and touch input\nfor our games.","parameters":{"---Mouse---":"","Press Check":"false","Trigger Check":"false","Repeat Check":"false","Long Press Check":"false","Cancel Check":"false","Move Check":"false","Release Check":"false","Wheel Check":"false","Map Move Check":"false"}},
 {"name":"stbvorbis_stream_asm","status":false,"description":"","parameters":{}}
 ];
