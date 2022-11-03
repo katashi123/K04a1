@@ -27,5 +27,6 @@ var $plugins =
 {"name":"TMOmitEquipCommand","status":true,"description":"装備シーンからコマンドウィンドウを削除し、\nスロットウィンドウに２行分のスペースを追加します。","parameters":{}},
 {"name":"AudioStreaming","status":true,"description":"Load audio faster and use only ogg files.","parameters":{"mode":"10","deleteM4a":"false"}},
 {"name":"stbvorbis_stream","status":false,"description":"","parameters":{}},
+{"name":"liply_Controller","status":true,"description":"liply_Controller","parameters":{"Show in PC":"off"}},
 {"name":"stbvorbis_stream_asm","status":false,"description":"","parameters":{}}
 ];
