@@ -25,9 +25,9 @@ var $plugins =
 {"name":"UTA_MessageSkip","status":true,"description":"特定キーを押す事でメッセージをスキップできるようにします。","parameters":{"Skip Key":"control","Show Trace":"false"}},
 {"name":"Titlewindow_riru","status":true,"description":"タイトルのコマンドウィンドウのの選択画面を変更します。","parameters":{"Window X":"330","Window Y":"250","Background":"2","Width":"240","Maxcols":"1","Align":"0","Font Size":"30","SPFont Color":"#ffffff","SPColorTone_r":"0","SPColorTone_g":"0","SPColorTone_b":"0","SPColorTone_gr":"0","SPFont Y":"0","Opacity":"128"}},
 {"name":"TMOmitEquipCommand","status":true,"description":"装備シーンからコマンドウィンドウを削除し、\nスロットウィンドウに２行分のスペースを追加します。","parameters":{}},
-{"name":"AudioStreaming","status":true,"description":"Load audio faster and use only ogg files.","parameters":{"mode":"10","deleteM4a":"false"}},
-{"name":"stbvorbis_stream","status":false,"description":"","parameters":{}},
 {"name":"liply_Controller","status":true,"description":"liply_Controller","parameters":{"Show in PC":"off"}},
 {"name":"YEP_TouchInputDisabler","status":true,"description":"v1.00 Sometimes, we just want to disable mouse and touch input\nfor our games.","parameters":{"---Mouse---":"","Press Check":"false","Trigger Check":"false","Repeat Check":"false","Long Press Check":"false","Cancel Check":"false","Move Check":"false","Release Check":"false","Wheel Check":"false","Map Move Check":"false"}},
+{"name":"AudioStreaming","status":true,"description":"Load audio faster and use only ogg files.","parameters":{"mode":"10","deleteM4a":"false"}},
+{"name":"stbvorbis_stream","status":false,"description":"","parameters":{}},
 {"name":"stbvorbis_stream_asm","status":false,"description":"","parameters":{}}
 ];
