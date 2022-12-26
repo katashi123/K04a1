@@ -1,5 +1,5 @@
 //=============================================================================
-// rpg_windows.js
+// rpg_windows.js v1.6.2
 //=============================================================================
 
 //-----------------------------------------------------------------------------
@@ -47,7 +47,7 @@ Window_Base.prototype.standardFontFace = function() {
 };
 
 Window_Base.prototype.standardFontSize = function() {
-    return 28;
+    return 24;
 };
 
 Window_Base.prototype.standardPadding = function() {
@@ -385,13 +385,13 @@ Window_Base.prototype.processDrawIcon = function(iconIndex, textState) {
 
 Window_Base.prototype.makeFontBigger = function() {
     if (this.contents.fontSize <= 96) {
-        this.contents.fontSize += 12;
+        this.contents.fontSize += 6;
     }
 };
 
 Window_Base.prototype.makeFontSmaller = function() {
-    if (this.contents.fontSize >= 24) {
-        this.contents.fontSize -= 12;
+    if (this.contents.fontSize >= 18) {
+        this.contents.fontSize -= 4;
     }
 };
 
@@ -700,6 +700,12 @@ Window_Base.prototype.canvasToLocalY = function(y) {
         node = node.parent;
     }
     return y;
+};
+
+Window_Base.prototype.reserveFaceImages = function() {
+    $gameParty.members().forEach(function(actor) {
+        ImageManager.reserveFace(actor.faceName());
+    }, this);
 };
 
 //-----------------------------------------------------------------------------
@@ -1699,7 +1705,6 @@ Window_MenuStatus.prototype.initialize = function(x, y) {
     Window_Selectable.prototype.initialize.call(this, x, y, width, height);
     this._formationMode = false;
     this._pendingIndex = -1;
-    this.loadImages();
     this.refresh();
 };
 
@@ -1726,7 +1731,7 @@ Window_MenuStatus.prototype.numVisibleRows = function() {
 
 Window_MenuStatus.prototype.loadImages = function() {
     $gameParty.members().forEach(function(actor) {
-        ImageManager.loadFace(actor.faceName());
+        ImageManager.reserveFace(actor.faceName());
     }, this);
 };
 
@@ -1750,7 +1755,7 @@ Window_MenuStatus.prototype.drawItemImage = function(index) {
     var actor = $gameParty.members()[index];
     var rect = this.itemRect(index);
     this.changePaintOpacity(actor.isBattleMember());
-    this.drawActorFace(actor, rect.x + 1, rect.y + 1, 144, rect.height - 2);
+    this.drawActorFace(actor, rect.x + 1, rect.y + 1, Window_Base._faceWidth, Window_Base._faceHeight);
     this.changePaintOpacity(true);
 };
 
@@ -1889,7 +1894,6 @@ Window_ItemCategory.prototype.makeCommandList = function() {
 
 Window_ItemCategory.prototype.setItemWindow = function(itemWindow) {
     this._itemWindow = itemWindow;
-    this.update();
 };
 
 //-----------------------------------------------------------------------------
@@ -2065,7 +2069,6 @@ Window_SkillType.prototype.update = function() {
 
 Window_SkillType.prototype.setSkillWindow = function(skillWindow) {
     this._skillWindow = skillWindow;
-    this.update();
 };
 
 Window_SkillType.prototype.selectLast = function() {
@@ -2426,7 +2429,6 @@ Window_EquipSlot.prototype.setStatusWindow = function(statusWindow) {
 
 Window_EquipSlot.prototype.setItemWindow = function(itemWindow) {
     this._itemWindow = itemWindow;
-    this.update();
 };
 
 Window_EquipSlot.prototype.updateHelp = function() {
@@ -2521,6 +2523,7 @@ Window_Status.prototype.initialize = function() {
     var width = Graphics.boxWidth;
     var height = Graphics.boxHeight;
     Window_Selectable.prototype.initialize.call(this, 0, 0, width, height);
+    this._actor = null;
     this.refresh();
     this.activate();
 };
@@ -3432,7 +3435,7 @@ Window_NameEdit.prototype.initialize = function(actor, maxLength) {
     this._defaultName = this._name;
     this.deactivate();
     this.refresh();
-    ImageManager.loadFace(actor.faceName());
+    ImageManager.reserveFace(actor.faceName());
 };
 
 Window_NameEdit.prototype.windowWidth = function() {
@@ -4251,6 +4254,7 @@ Window_Message.prototype.initialize = function() {
 };
 
 Window_Message.prototype.initMembers = function() {
+    this._imageReservationId = Utils.generateRuntimeId();
     this._background = 0;
     this._positionType = 2;
     this._waitCount = 0;
@@ -4288,7 +4292,7 @@ Window_Message.prototype.clearFlags = function() {
 };
 
 Window_Message.prototype.numVisibleRows = function() {
-    return 4;
+    return 2;
 };
 
 Window_Message.prototype.update = function() {
@@ -4338,6 +4342,8 @@ Window_Message.prototype.updatePlacement = function() {
     this._positionType = $gameMessage.positionType();
     this.y = this._positionType * (Graphics.boxHeight - this.height) / 2;
     this._goldWindow.y = this.y > 0 ? 0 : Graphics.boxHeight - this._goldWindow.height;
+    
+    if(this._positionType === 2) this.y += 12;
 };
 
 Window_Message.prototype.updateBackground = function() {
@@ -4362,7 +4368,7 @@ Window_Message.prototype.updateWait = function() {
 
 Window_Message.prototype.updateLoading = function() {
     if (this._faceBitmap) {
-        if (ImageManager.isReady()) {
+        if (this._faceBitmap.isReady()) {
             this.drawMessageFace();
             this._faceBitmap = null;
             return false;
@@ -4480,11 +4486,12 @@ Window_Message.prototype.newPage = function(textState) {
 };
 
 Window_Message.prototype.loadMessageFace = function() {
-    this._faceBitmap = ImageManager.loadFace($gameMessage.faceName());
+    this._faceBitmap = ImageManager.reserveFace($gameMessage.faceName(), 0, this._imageReservationId);
 };
 
 Window_Message.prototype.drawMessageFace = function() {
     this.drawFace($gameMessage.faceName(), $gameMessage.faceIndex(), 0, 0);
+    ImageManager.releaseReservation(this._imageReservationId);
 };
 
 Window_Message.prototype.newLineX = function() {
@@ -5431,7 +5438,14 @@ Window_ActorCommand.prototype.processOk = function() {
 Window_ActorCommand.prototype.selectLast = function() {
     this.select(0);
     if (this._actor && ConfigManager.commandRemember) {
-        this.selectSymbol(this._actor.lastCommandSymbol());
+        var symbol = this._actor.lastCommandSymbol();
+        this.selectSymbol(symbol);
+        if (symbol === 'skill') {
+            var skill = this._actor.lastBattleSkill();
+            if (skill) {
+                this.selectExt(skill.stypeId);
+            }
+        }
     }
 };
 
@@ -5886,7 +5900,6 @@ Window_DebugRange.prototype.processCancel = function() {
 
 Window_DebugRange.prototype.setEditWindow = function(editWindow) {
     this._editWindow = editWindow;
-    this.update();
 };
 
 //-----------------------------------------------------------------------------
